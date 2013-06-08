@@ -1,24 +1,36 @@
-# DurableDecorator
+# DEFINITELY NOT READY YET
 
-TODO: Write a gem description
+This is a project for modifying the behavior of gems outside of your reach. You may be using a large Rails Engine and be wanting to simple decorate some existing behavior, but at the same time you want to inherit original behavior. 
 
 ## Installation
 
 Add this line to your application's Gemfile:
 
-    gem 'durable_decorator'
+    gem 'durable_decorator', :github => 'jumph4x/durable_decorator'
 
 And then execute:
 
     $ bundle
 
-Or install it yourself as:
-
-    $ gem install durable_decorator
-
 ## Usage
 
-TODO: Write usage instructions here
+```ruby
+class ExampleClass
+  def string_method
+    "old"
+  end
+end
+
+class ExampleClass
+  decorate :string_method do
+    old + " and new"
+  end
+end
+
+instance = ExampleClass.new
+instance.string_method
+# => "old and new"
+```
 
 ## Contributing
 
