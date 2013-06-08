@@ -2,6 +2,10 @@
 
 This is a project for modifying the behavior of gems outside of your reach. You may be using a large Rails Engine and be wanting to simple decorate some existing behavior, but at the same time you want to inherit original behavior. 
 
+## On tracking new decorators and managing fragility
+
+After a lovely and short discussion with @BDQ regarding these ideas, he mentioned we could try hashing methods to be able to raise warnings upon unexpected sources or targets (see his work on [Deface](/BDQ/deface)). These is no clear way to implement this for now, for reasons and discussion, see the documentation for [Sourcify](/ngty/sourcify).
+
 ## Installation
 
 Add this line to your application's Gemfile:
