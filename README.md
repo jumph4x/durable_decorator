@@ -6,7 +6,7 @@ This is a project for modifying the behavior of gems outside of your reach. You 
 
 ## On tracking new decorators and managing fragility
 
-After a lovely and short discussion with @BDQ regarding these ideas, he mentioned we could try hashing methods to be able to raise warnings upon unexpected sources or targets (see his work on [Deface](https://github.com/spree/deface)). This project relies on another lovely meta-programming creation by [John Mair](https://github.com/banister), specifically his work on [method_source](https://github.com/banister/method_source).
+After a lovely and short discussion with [Brian Quinn](https://github.com/BDQ) regarding these ideas, he mentioned we could try hashing methods to be able to raise warnings upon unexpected sources or targets (see his work on [Deface](https://github.com/spree/deface)). This project relies on another lovely meta-programming creation by [John Mair](https://github.com/banister), specifically his work on [method_source](https://github.com/banister/method_source).
 
 ## Installation
 
