@@ -32,9 +32,16 @@ module DurableDecorator
           raise UndefinedMethodError, "#{clazz}##{method_name} is not defined."
         end
 
-        raise BadArityError, "Attempting to override #{clazz}'s #{method_name} with incorrect arity." unless block.arity == old_method.arity
+        block_arity = safe_arity_check(&block)
+        raise BadArityError, "Attempting to override #{clazz}'s #{method_name} with incorrect arity." if block_arity != old_method.arity # See the #arity behavior disparity between 1.8- and 1.9+
 
         old_method
+      end
+
+      def safe_arity_check &block
+        # Necessary due to the different #arity handling on Procs by 1.9+ and 1.8-
+        Dummy.define_method(:arity_check, &block)
+        Dummy.instance_method(:arity_check).arity
       end
 
       def store_redefinition clazz, name, old_method, new_method
