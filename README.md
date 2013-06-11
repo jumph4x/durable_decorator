@@ -24,19 +24,19 @@ And then execute:
 ```ruby
 class ExampleClass
   def string_method
-    "old"
+    "original"
   end
 end
 
 class ExampleClass
   decorate :string_method do
-    old + " and new"
+    string_method_old + " and new"
   end
 end
 
 instance = ExampleClass.new
 instance.string_method
-# => "old and new"
+# => "original and new"
 ```
 
 ## Contributing
