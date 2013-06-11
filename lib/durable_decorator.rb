@@ -2,7 +2,6 @@
 require 'method_source'
 
 # core
-require "durable_decorator/dummy"
 require "durable_decorator/version"
 require "durable_decorator/base"
 
