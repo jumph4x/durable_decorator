@@ -6,7 +6,7 @@ module DurableDecorator
       REDEFINITIONS = {}
 
       def redefine clazz, method_name, &block
-        old_method = existing_method clazz, method_name, &block
+        return unless (old_method = existing_method clazz, method_name, &block)
 
         sha = method_sha(old_method)
   
@@ -18,8 +18,6 @@ module DurableDecorator
         end
 
         store_redefinition clazz, method_name, old_method, block
-
-        true
       end
 
       # Ensure method exists before creating new definitions
@@ -64,12 +62,35 @@ module DurableDecorator
 
       def redefined? clazz, method_name, &block
         begin
-          overrides = REDEFINITIONS[clazz][method_name] and
-          overrides.select{|o| o == method_hash(method_name)}.first and
-          true
+          result =
+            overrides = REDEFINITIONS[clazz][method_name] and
+            overrides.select{|o| o == method_hash(method_name)}.first and
+            true
         rescue
           false
         end
+      end
+
+      def logger
+        return @logger if @logger
+
+        @logger = Logging.logger(STDOUT)
+        @logger.level = :warn
+        @logger
+      end
+
+      def determine_sha target
+        raise "Please provide a fully qualified method name: Module::Clazz#instance_method or ::clazz_method" unless target.match(/\.|#/)
+
+        class_name, separator, method_name = target.match(/(.*)(\.|#)(.*)/)[1..3]
+        clazz = Constantizer.constantize(class_name)
+        method = if separator == '#'
+          clazz.instance_method(method_name)
+        else
+          clazz.method(method_name)
+        end
+
+        method_sha(method)
       end
     end
   end

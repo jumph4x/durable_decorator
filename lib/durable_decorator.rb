@@ -1,8 +1,12 @@
 # dependency for extracting method bodies and comments
 require 'method_source'
 
+# basic logging, trying to avoid pulling in rails
+require 'logging'
+
 # core
 require "durable_decorator/version"
+require "durable_decorator/constantizer"
 require "durable_decorator/base"
 
 # errors

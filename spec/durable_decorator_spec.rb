@@ -1,37 +1,41 @@
 require 'spec_helper'
 
 describe DurableDecorator do
-  before do
-    class ExampleClass
-      def string_method
-        "old string"
-      end
-    end
-  end
+  
+  # Spec uses example.rb class
 
   context 'for existing instance methods' do
-    before do
+    it 'guarantees access to #method_old' do
       ExampleClass.class_eval do
-        decorate :string_method do 
-          string_method_old + " and a new string"
+        decorate :no_param_method do 
+          no_param_method_old + " and a new string"
         end
       end
-    end
 
-    it 'guarantees access to #old' do
       instance = ExampleClass.new
-      instance.string_method.should == 'old string and a new string'
+      instance.no_param_method.should == 'original and a new string'
     end 
 
     context 'with incorrect arity' do
       it 'throws an error' do
-      lambda{
+        lambda{
+          ExampleClass.class_eval do
+            decorate(:no_param_method){|a,b| }
+          end
+        }.should raise_error(DurableDecorator::BadArityError)
+      end
+    end
+
+    context 'for methods with multiple parameters' do
+      it 'guarantees access to #method_old' do
         ExampleClass.class_eval do
-          decorate :string_method do |arg1, arg2|
-            string_method_old + " and new string"
+          decorate :one_param_method do |another_string|
+            "#{one_param_method_old('check')} and #{another_string}"
           end
         end
-      }.should raise_error(DurableDecorator::BadArityError)
+
+        instance = ExampleClass.new
+        instance.one_param_method("here we go").should == 'original: check and here we go'
       end
     end
   end
@@ -40,11 +44,29 @@ describe DurableDecorator do
     it 'throws an error' do
       lambda{
         ExampleClass.class_eval do
-          decorate :integer_method do 
-            string_method_old + " and new string"
-          end
+          decorate(:integer_method){ }
         end
       }.should raise_error(DurableDecorator::UndefinedMethodError)
+    end
+  end
+
+  context 'when asked to find the sha' do
+    context 'when the target is invalid' do
+      it 'should raise an error' do
+        lambda{ DurableDecorator::Base.determine_sha 'invalid' }.should raise_error
+      end
+    end
+
+    context 'when the target is an instance method' do
+      it 'should return the sha' do
+        DurableDecorator::Base.determine_sha('ExampleClass#no_param_method').should == 'd088d634152e550276dc548e1569af3eaef19b7a'
+      end
+    end
+
+    context 'when the target is a class method' do
+      it 'should return the sha' do
+        DurableDecorator::Base.determine_sha('ExampleClass.clazz_level').should == 'f6490bec1af021697ed8e5990f0d1db3976f065f'
+      end
     end
   end
 end
