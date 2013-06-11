@@ -58,14 +58,17 @@ describe DurableDecorator do
     end
 
     context 'when the target is an instance method' do
+      before{ require 'example_class' }
       it 'should return the sha' do
-        DurableDecorator::Base.determine_sha('ExampleClass#no_param_method').should == '21c45efc190abbe9d9f2407d833f708f93ca2c70'
+        DurableDecorator::Base.determine_sha('ExampleClass#no_param_method').should ==
+          'ba3114b2d46caa684b3f7ba38d6f74b2'
       end
     end
 
     context 'when the target is a class method' do
       it 'should return the sha' do
-        DurableDecorator::Base.determine_sha('ExampleClass.clazz_level').should == 'f6490bec1af021697ed8e5990f0d1db3976f065f'
+        DurableDecorator::Base.determine_sha('ExampleClass.clazz_level').should ==
+          'c5a3870a3934ce8d2145b841e42a8ad4'
       end
     end
   end

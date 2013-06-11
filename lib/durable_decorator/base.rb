@@ -1,4 +1,4 @@
-require 'digest/sha1'
+require 'digest/md5'
 
 module DurableDecorator
   class Base
@@ -57,7 +57,7 @@ module DurableDecorator
       end
 
       def method_sha method
-        Digest::SHA1.hexdigest(method.source.gsub(/\s+/, ' '))
+        Digest::MD5.hexdigest(method.source.gsub(/\s+/, ' '))
       end
 
       def redefined? clazz, method_name, &block
