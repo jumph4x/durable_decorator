@@ -59,7 +59,7 @@ describe DurableDecorator do
 
     context 'when the target is an instance method' do
       it 'should return the sha' do
-        DurableDecorator::Base.determine_sha('ExampleClass#no_param_method').should == 'd088d634152e550276dc548e1569af3eaef19b7a'
+        DurableDecorator::Base.determine_sha('ExampleClass#no_param_method').should == '21c45efc190abbe9d9f2407d833f708f93ca2c70'
       end
     end
 
