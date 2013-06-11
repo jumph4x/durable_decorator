@@ -1,3 +1,7 @@
+# dependency for extracting method bodies and comments
+require 'method_source'
+
+# core
 require "durable_decorator/version"
 require "durable_decorator/base"
 
@@ -8,6 +12,7 @@ require "durable_decorator/undefined_method_error"
 module DurableDecorator
 end
 
+# monkey-patching Ruby core to create an API
 Object.class_eval do
   class << self
     def decorate method_name, &block

@@ -13,7 +13,7 @@ describe DurableDecorator do
     before do
       ExampleClass.class_eval do
         decorate :string_method do 
-          old + " and new string"
+          string_method_old + " and a new string"
         end
       end
     end
@@ -28,7 +28,7 @@ describe DurableDecorator do
       lambda{
         ExampleClass.class_eval do
           decorate :string_method do |arg1, arg2|
-            old + " and new string"
+            string_method_old + " and new string"
           end
         end
       }.should raise_error(DurableDecorator::BadArityError)
@@ -41,7 +41,7 @@ describe DurableDecorator do
       lambda{
         ExampleClass.class_eval do
           decorate :integer_method do 
-            old + " and new string"
+            string_method_old + " and new string"
           end
         end
       }.should raise_error(DurableDecorator::UndefinedMethodError)
