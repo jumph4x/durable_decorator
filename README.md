@@ -62,6 +62,8 @@ end
 DurableDecorator::TamperedDefinitionError: Method SHA mismatch, the definition has been tampered with
 ```
 
+DurableDecorator also maintains explicit versions of each method overriden by creating aliases with appended SHAs of the form ```some_method_1234abcd``` so you can always target explicit method versions without relying on ```some_method_old```.
+
 ## Contributing
 
 1. Fork it
