@@ -47,7 +47,7 @@ instance.string_method
 
 Furthermore, we can hash the contents of a method as it exists at inspect-time and seal it by providing extra options to the decorator. If the method definition gets tampered with, the decorator will detect this at decoration-time and raise an error for your review. 
 
-Find the SHA of the method as currently loaded into memory:
+Find the SHA of the method as currently loaded into memory, works with classes as well as modules:
 ```ruby
 DurableDecorator::Base.determine_sha('ExampleClass#instance_method')
 ```
