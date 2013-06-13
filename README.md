@@ -46,7 +46,7 @@ instance.string_method
 Furthermore, we can hash the contents of a method as it exists at inspect-time and seal it by providing extra options to the decorator. If the method definition gets tampered with, the decorator will detect this at decoration-time and raise an error for your review. 
 
 ```ruby
-DurableDecorator.determine_sha('ExampleClass#no_param_method')
+DurableDecorator::Base.determine_sha('ExampleClass#no_param_method')
 # => 'ba3114b2d46caa684b3f7ba38d6f74b2'
 ExampleClass.class_eval do
   meta = {
