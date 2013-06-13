@@ -38,6 +38,56 @@ describe DurableDecorator::Base do
           instance.one_param_method("here we go").should == 'original: check and here we go'
         end
       end
+
+      context 'for strict definitions' do
+        context 'with the correct SHA' do
+          it 'guarantees access to #method_old' do
+            ExampleClass.class_eval do
+              meta = {
+                mode: 'strict',
+                sha: 'ba3114b2d46caa684b3f7ba38d6f74b2'
+              }
+              decorate :no_param_method, meta do 
+                no_param_method_old + " and a new string"
+              end
+            end
+
+            instance = ExampleClass.new
+            instance.no_param_method.should == "original and a new string"
+          end
+        end
+
+        context 'with the wrong SHA' do
+          it 'raises an error' do
+            lambda{
+              ExampleClass.class_eval do
+                meta = {
+                  mode: 'strict',
+                  sha: '1234wrong'
+                }
+                decorate :no_param_method, meta do 
+                  no_param_method_old + " and a new string"
+                end
+              end
+            }.should raise_error(DurableDecorator::TamperedDefinitionError)
+          end
+        end
+
+        context 'for an invalid config' do
+          it 'raises an error' do
+            lambda{
+              ExampleClass.class_eval do
+                meta = {
+                  mode: 'strict'
+                }
+                decorate :no_param_method, meta do 
+                  no_param_method_old + " and a new string"
+                end
+              end
+            }.should raise_error(DurableDecorator::InvalidDecorationError)
+          end
+        end
+      end
     end
 
     context 'for methods not yet defined' do

@@ -12,6 +12,8 @@ require "durable_decorator/base"
 # errors
 require "durable_decorator/bad_arity_error"
 require "durable_decorator/undefined_method_error"
+require "durable_decorator/invalid_decoration_error"
+require "durable_decorator/tampered_definition_error"
 
 module DurableDecorator
 end
@@ -19,18 +21,18 @@ end
 # monkey-patching Ruby core to create an API
 Object.class_eval do
   class << self
-    def decorate method_name, &block
-      DurableDecorator::Base.redefine self, method_name, &block
+    def decorate method_name, meta = nil, &block
+      DurableDecorator::Base.redefine self, method_name, meta, &block
     end
 
-    def decorate_singleton method_name, &block
-      decorate "self.#{method_name}", &block
+    def decorate_singleton method_name, meta = nil, &block
+      decorate "self.#{method_name}", meta, &block
     end
   end
 end
 
 Module.class_eval do
-  def decorate method_name, &block
-    DurableDecorator::Base.redefine self, method_name, &block
+  def decorate method_name, meta = nil, &block
+    DurableDecorator::Base.redefine self, method_name, meta, &block
   end
 end

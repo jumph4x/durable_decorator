@@ -3,40 +3,60 @@ require 'digest/md5'
 module DurableDecorator
   class Base
     class << self
+      DECORATION_MODES = ['strict']
       REDEFINITIONS = {}
 
-      def redefine clazz, method_name, &block
+      def redefine clazz, method_name, meta, &block
         if method_name.to_s.match /^self\./
-          redefine_instance (class << clazz; self; end), method_name.to_s.gsub("self.",''), &block
+          redefine_instance (class << clazz; self; end), method_name.to_s.gsub("self.",''), meta, &block
         else
-          redefine_instance clazz, method_name, &block
+          redefine_instance clazz, method_name, meta, &block
         end
       end
 
-      def redefine_instance clazz, method_name, &block
-        return unless (old_method = existing_method clazz, method_name, &block)
+      def redefine_instance clazz, method_name, meta, &block
+        return unless old_method = existing_method(clazz, method_name, meta, &block)
 
-        sha = method_sha(old_method)
-  
-        alias_definitions clazz, method_name, sha
+        alias_definitions clazz, method_name, method_sha(old_method)
         redefine_method clazz, method_name, &block
 
         store_redefinition clazz, method_name, old_method, block
       end
 
       # Ensure method exists before creating new definitions
-      def existing_method clazz, method_name, &block
-        return false if redefined? clazz, method_name, &block
+      def existing_method clazz, method_name, meta, &block
+        return if redefined? clazz, method_name, &block
 
+        old_method = validate_existing_definition clazz, method_name
+        validate_method_arity clazz, method_name, old_method, &block
+        validate_decoration_meta clazz, method_name, old_method, meta
+
+        old_method
+      end
+
+      def validate_decoration_meta clazz, method_name, old_method, meta
+        return unless meta
+
+        chill_meta = {}
+        meta.each do |k,v|
+          chill_meta[k.to_sym] = v
+        end
+
+        raise InvalidDecorationError, "The hash provided to the decorator is invalid" unless DECORATION_MODES.include? chill_meta[:mode] and chill_meta[:sha] and !chill_meta[:sha].empty?
+        
+        raise TamperedDefinitionError, "Method SHA mismatch, the definition has been tampered with" unless method_sha(old_method) == chill_meta[:sha]
+      end
+
+      def validate_method_arity clazz, method_name, old_method, &block
+        raise BadArityError, "Attempting to override #{clazz}'s #{method_name} with incorrect arity." if block.arity != old_method.arity and block.arity > 0 # See the #arity behavior disparity between 1.8- and 1.9+
+      end
+
+      def validate_existing_definition clazz, method_name
         begin
-          old_method = clazz.instance_method(method_name)
+          clazz.instance_method(method_name)
         rescue NameError => e
           raise UndefinedMethodError, "#{clazz}##{method_name} is not defined."
         end
-
-        raise BadArityError, "Attempting to override #{clazz}'s #{method_name} with incorrect arity." if block.arity != old_method.arity and block.arity > 0 # See the #arity behavior disparity between 1.8- and 1.9+
-
-        old_method
       end
 
       def redefine_method clazz, method_name, &block
