@@ -50,8 +50,9 @@ module DurableDecorator
       end
 
       def store_redefinition clazz, name, old_method, new_method
-        class_name = (clazz.name || "Meta#{clazz.superclass.to_s}").to_sym
-        class_index = REDEFINITIONS[class_name] ||= {}
+        class_name = clazz.name || ''
+        class_name = "Meta#{clazz.superclass.to_s}" if class_name.empty?
+        class_index = REDEFINITIONS[class_name.to_sym] ||= {}
         method_index = class_index[name.to_sym] ||= []
        
         to_store = [new_method]
