@@ -41,6 +41,25 @@ instance.string_method
 # => "original and new"
 ```
 
+Furthermore, we can hash the contents of a method as it exists at inspect-time and seal it by providing extra options to the decorator. If the method definition gets tampered with, the decorator will detect this at decoration-time and raise an error for your review. 
+
+```ruby
+DurableDecorator.determine_sha('ExampleClass#no_param_method')
+# => 'ba3114b2d46caa684b3f7ba38d6f74b2'
+ExampleClass.class_eval do
+  meta = {
+    mode: 'strict',
+    sha: 'WE-IGNORE-THE-ABOVE'
+  }
+
+  decorate :string_method, meta do
+    string_method_old + " and new"
+  end
+end
+
+DurableDecorator::TamperedDefinitionError: Method SHA mismatch, the definition has been tampered with
+```
+
 ## Contributing
 
 1. Fork it
