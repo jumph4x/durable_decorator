@@ -53,12 +53,13 @@ describe DurableDecorator do
   context 'when asked to find the sha' do
     context 'when the target is invalid' do
       it 'should raise an error' do
-        lambda{ DurableDecorator::Base.determine_sha 'invalid' }.should raise_error
+        lambda{
+          DurableDecorator::Base.determine_sha 'invalid'
+        }.should raise_error
       end
     end
 
     context 'when the target is an instance method' do
-      before{ require 'example_class' }
       it 'should return the sha' do
         DurableDecorator::Base.determine_sha('ExampleClass#no_param_method').should ==
           'ba3114b2d46caa684b3f7ba38d6f74b2'
