@@ -3,7 +3,7 @@ require 'spec_helper'
 describe DurableDecorator::Base do
 
   context 'with classes' do
-  # Spec uses ./example.rb 
+  # Spec uses ./example_class.rb 
     context 'for existing instance methods' do
       it 'guarantees access to #method_old' do
         ExampleClass.class_eval do
@@ -96,6 +96,7 @@ describe DurableDecorator::Base do
   end
 
   context 'with modules' do
+  # Spec uses ./sample_module.rb 
     context 'for existing methods' do
       it 'guarantees access to #method_old' do
         Sample.class_eval do
