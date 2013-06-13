@@ -43,8 +43,21 @@ instance.string_method
 # => "original and new"
 ```
 
+### Working with SHAs
+
 Furthermore, we can hash the contents of a method as it exists at inspect-time and seal it by providing extra options to the decorator. If the method definition gets tampered with, the decorator will detect this at decoration-time and raise an error for your review. 
 
+Find the SHA of the method as currently loaded into memory:
+```ruby
+DurableDecorator::Base.determine_sha('ExampleClass#instance_method')
+```
+
+Or for class (singleton) methods:
+```ruby
+DurableDecorator::Base.determine_sha('ExampleClass.class_level_method')
+```
+
+Armed with this knowledge, we can enforce a strict mode: 
 ```ruby
 DurableDecorator::Base.determine_sha('ExampleClass#no_param_method')
 # => 'ba3114b2d46caa684b3f7ba38d6f74b2'
@@ -63,6 +76,11 @@ DurableDecorator::TamperedDefinitionError: Method SHA mismatch, the definition h
 ```
 
 DurableDecorator also maintains explicit versions of each method overriden by creating aliases with appended SHAs of the form ```some_method_1234abcd``` so you can always target explicit method versions without relying on ```some_method_old```.
+
+### No more suprise monkey patching
+Once you decorate the method and seal it with its SHA, if some gem tries to come in and overwrite your work **BEFORE** decorate-time, DurableDecorator will warn you. Similarly, expect to see an exception bubble up if the definition of the original method has changed and requires a review and a re-hash. 
+
+The usefulness is for gem consumers, and their application-level specs. 
 
 ## Contributing
 
