@@ -95,6 +95,42 @@ describe DurableDecorator::Base do
     end
   end
 
+  context 'with modules' do
+    context 'for existing methods' do
+      it 'guarantees access to #method_old' do
+        Sample.class_eval do
+          decorate :module_method do 
+            module_method_old + " and a new string"
+          end
+        end
+
+        o = Object.new
+        o.extend(Sample)
+        o.module_method.should == 'original and a new string'
+      end 
+
+      context 'with incorrect arity' do
+        it 'throws an error' do
+          lambda{
+            Sample.class_eval do
+              decorate(:module_method){|a,b| }
+            end
+          }.should raise_error(DurableDecorator::BadArityError)
+        end
+      end
+    end
+
+    context 'for methods not yet defined' do
+      it 'throws an error' do
+        lambda{
+          Sample.class_eval do
+            decorate(:integer_method){ }
+          end
+        }.should raise_error(DurableDecorator::UndefinedMethodError)
+      end
+    end
+  end
+
   context 'finding the sha' do
     context 'when asked to find the sha' do
       context 'when the target is invalid' do

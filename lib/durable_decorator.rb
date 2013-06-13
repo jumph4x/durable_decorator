@@ -28,3 +28,9 @@ Object.class_eval do
     end
   end
 end
+
+Module.class_eval do
+  def decorate method_name, &block
+    DurableDecorator::Base.redefine self, method_name, &block
+  end
+end
