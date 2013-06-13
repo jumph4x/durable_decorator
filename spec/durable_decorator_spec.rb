@@ -1,8 +1,7 @@
 require 'spec_helper'
 
 describe DurableDecorator do
-  
-  # Spec uses example.rb class
+  # Spec uses ./example.rb 
 
   context 'for existing instance methods' do
     it 'guarantees access to #method_old' do
