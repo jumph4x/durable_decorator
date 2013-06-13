@@ -10,12 +10,8 @@ module DurableDecorator
 
         sha = method_sha(old_method)
   
-        clazz.class_eval do
-          alias_method("#{method_name}_#{sha}", method_name)
-          alias_method("#{method_name}_old", method_name)
-
-          define_method(method_name.to_sym, &block)
-        end
+        alias_definitions clazz, method_name, sha
+        redefine_method clazz, method_name, &block
 
         store_redefinition clazz, method_name, old_method, block
       end
@@ -33,6 +29,19 @@ module DurableDecorator
         raise BadArityError, "Attempting to override #{clazz}'s #{method_name} with incorrect arity." if block.arity != old_method.arity and block.arity > 0 # See the #arity behavior disparity between 1.8- and 1.9+
 
         old_method
+      end
+
+      def redefine_method clazz, method_name, &block
+        clazz.class_eval do
+          define_method(method_name.to_sym, &block)
+        end
+      end
+
+      def alias_definitions clazz, method_name, old_sha
+        clazz.class_eval do
+          alias_method("#{method_name}_#{old_sha}", method_name)
+          alias_method("#{method_name}_old", method_name)
+        end
       end
 
       def store_redefinition clazz, name, old_method, new_method
