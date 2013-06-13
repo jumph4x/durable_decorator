@@ -5,12 +5,15 @@ module DurableDecorator
     class << self
       REDEFINITIONS = {}
 
-      def redefine_singleton clazz, method_name, &block
-        singleton_class = (class << clazz; self; end)
-        redefine singleton_class, method_name, &block
+      def redefine clazz, method_name, &block
+        if method_name.match /^self\./
+          redefine_instance (class << clazz; self; end), method_name.gsub("self.",''), &block
+        else
+          redefine_instance clazz, method_name, &block
+        end
       end
 
-      def redefine clazz, method_name, &block
+      def redefine_instance clazz, method_name, &block
         return unless (old_method = existing_method clazz, method_name, &block)
 
         sha = method_sha(old_method)
