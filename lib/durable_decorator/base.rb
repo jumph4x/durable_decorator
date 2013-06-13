@@ -6,8 +6,8 @@ module DurableDecorator
       REDEFINITIONS = {}
 
       def redefine clazz, method_name, &block
-        if method_name.match /^self\./
-          redefine_instance (class << clazz; self; end), method_name.gsub("self.",''), &block
+        if method_name.to_s.match /^self\./
+          redefine_instance (class << clazz; self; end), method_name.to_s.gsub("self.",''), &block
         else
           redefine_instance clazz, method_name, &block
         end
