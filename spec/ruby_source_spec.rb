@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-describe DurableDecorator::Base do
+describe 'Ruby' do
   it 'correctly identifies the method #source_location' do
     DurableDecorator::Base.method(:existing_method).source_location.join.should match(/durable_decorator\/base\.rb/)
   end
