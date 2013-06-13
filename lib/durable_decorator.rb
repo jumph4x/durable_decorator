@@ -22,5 +22,9 @@ Object.class_eval do
     def decorate method_name, &block
       DurableDecorator::Base.redefine self, method_name, &block
     end
+
+    def decorate_singleton method_name, &block
+      DurableDecorator::Base.redefine_singleton self, method_name, &block
+    end
   end
 end

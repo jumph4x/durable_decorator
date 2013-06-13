@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-describe DurableDecorator do
+describe DurableDecorator::Base do
 
   context 'with classes' do
   # Spec uses ./example.rb 
@@ -26,7 +26,7 @@ describe DurableDecorator do
         end
       end
 
-      context 'for methods with multiple parameters' do
+      context 'for methods with parameters' do
         it 'guarantees access to #method_old' do
           ExampleClass.class_eval do
             decorate :one_param_method do |another_string|
@@ -50,6 +50,52 @@ describe DurableDecorator do
       end
     end
 
+    context 'for existing class methods' do
+      it 'guarantees access to ::method_old' do
+        ExampleClass.class_eval do
+          decorate_singleton :clazz_level do 
+            clazz_level_old + " and a new string"
+          end
+        end
+
+        ExampleClass.clazz_level.should == 'original and a new string'
+      end 
+
+      context 'with incorrect arity' do
+        it 'throws an error' do
+          lambda{
+            ExampleClass.class_eval do
+              decorate_singleton(:clazz_level){|a,b| }
+            end
+          }.should raise_error(DurableDecorator::BadArityError)
+        end
+      end
+
+      context 'for methods with parameters' do
+        it 'guarantees access to ::method_old' do
+          ExampleClass.class_eval do
+            decorate_singleton :clazz_level_paramed do |another_string|
+              "#{clazz_level_paramed_old('check')} and #{another_string}"
+            end
+          end
+
+          ExampleClass.clazz_level_paramed("here we go").should == 'original: check and here we go'
+        end
+      end
+    end
+
+    context 'for methods not yet defined' do
+      it 'throws an error' do
+        lambda{
+          ExampleClass.class_eval do
+            decorate_singleton(:integer_method){ }
+          end
+        }.should raise_error(DurableDecorator::UndefinedMethodError)
+      end
+    end
+  end
+
+  context 'finding the sha' do
     context 'when asked to find the sha' do
       context 'when the target is invalid' do
         it 'should raise an error' do

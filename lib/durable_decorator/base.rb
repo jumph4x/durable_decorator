@@ -5,6 +5,11 @@ module DurableDecorator
     class << self
       REDEFINITIONS = {}
 
+      def redefine_singleton clazz, method_name, &block
+        singleton_class = (class << clazz; self; end)
+        redefine singleton_class, method_name, &block
+      end
+
       def redefine clazz, method_name, &block
         return unless (old_method = existing_method clazz, method_name, &block)
 
@@ -45,7 +50,8 @@ module DurableDecorator
       end
 
       def store_redefinition clazz, name, old_method, new_method
-        class_index = REDEFINITIONS[clazz.name.to_sym] ||= {}
+        class_name = (clazz.name || "Meta#{clazz.superclass.to_s}").to_sym
+        class_index = REDEFINITIONS[class_name] ||= {}
         method_index = class_index[name.to_sym] ||= []
        
         to_store = [new_method]

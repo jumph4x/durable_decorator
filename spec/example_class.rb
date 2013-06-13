@@ -10,4 +10,8 @@ class ExampleClass
   def self.clazz_level
     "original"
   end
+
+  def self.clazz_level_paramed param
+    "original: #{param}"
+  end
 end
