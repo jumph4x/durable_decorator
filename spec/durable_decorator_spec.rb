@@ -39,6 +39,37 @@ describe DurableDecorator::Base do
         end
       end
 
+      context 'for double decorations' do
+        before do
+          @original_sha = DurableDecorator::Base.determine_sha("ExampleClass#one_param_method")
+
+          ExampleClass.class_eval do
+            decorate :one_param_method do |another_string|
+              "#{one_param_method_1884eb7af7abbccec3fd4048f99363a3('check')} and #{another_string}"
+            end
+          end
+
+         @redef_sha = DurableDecorator::Base.determine_sha("ExampleClass#one_param_method")
+        end
+
+        it 'works with explicit method version invocation' do
+          ExampleClass.class_eval do
+            decorate :one_param_method do |boolean|
+              if boolean
+                one_param_method_old("")
+              else
+                "latest"
+              end
+            end
+          end
+
+          instance = ExampleClass.new
+          instance.one_param_method(true).should == "original: check and "
+          instance.one_param_method(false).should == 'latest'
+          @original_sha.should_not == @redef_sha
+        end
+      end
+
       context 'for strict definitions' do
         context 'with the correct SHA' do
           it 'guarantees access to #method_old' do
