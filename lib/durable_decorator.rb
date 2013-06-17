@@ -21,18 +21,18 @@ end
 # monkey-patching Ruby core to create an API
 Object.class_eval do
   class << self
-    def decorate method_name, meta = nil, &block
+    def durably_decorate method_name, meta = nil, &block
       DurableDecorator::Base.redefine self, method_name, meta, &block
     end
 
-    def decorate_singleton method_name, meta = nil, &block
-      decorate "self.#{method_name}", meta, &block
+    def durably_decorate_singleton method_name, meta = nil, &block
+      durably_decorate "self.#{method_name}", meta, &block
     end
   end
 end
 
 Module.class_eval do
-  def decorate method_name, meta = nil, &block
+  def durably_decorate method_name, meta = nil, &block
     DurableDecorator::Base.redefine self, method_name, meta, &block
   end
 end
