@@ -3,24 +3,24 @@ require 'spec_helper'
 describe DurableDecorator::Base do
 
   context 'with classes' do
-  # Spec uses ./example_class.rb 
+  # Spec uses ./example_class.rb
     context 'for existing instance methods' do
       it 'guarantees access to #method_old' do
         ExampleClass.class_eval do
-          decorate :no_param_method do 
+          durably_decorate :no_param_method do
             no_param_method_old + " and a new string"
           end
         end
 
         instance = ExampleClass.new
         instance.no_param_method.should == 'original and a new string'
-      end 
+      end
 
       context 'with incorrect arity' do
         it 'throws an error' do
           lambda{
             ExampleClass.class_eval do
-              decorate(:no_param_method){|a,b| }
+              durably_decorate(:no_param_method){|a,b| }
             end
           }.should raise_error(DurableDecorator::BadArityError)
         end
@@ -29,7 +29,7 @@ describe DurableDecorator::Base do
       context 'for methods with parameters' do
         it 'guarantees access to #method_old' do
           ExampleClass.class_eval do
-            decorate :one_param_method do |another_string|
+            durably_decorate :one_param_method do |another_string|
               "#{one_param_method_old('check')} and #{another_string}"
             end
           end
@@ -44,7 +44,7 @@ describe DurableDecorator::Base do
           @original_sha = DurableDecorator::Base.determine_sha("ExampleClass#one_param_method")
 
           ExampleClass.class_eval do
-            decorate :one_param_method do |another_string|
+            durably_decorate :one_param_method do |another_string|
               "#{one_param_method_1884eb7af7abbccec3fd4048f99363a3('check')} and #{another_string}"
             end
           end
@@ -54,7 +54,7 @@ describe DurableDecorator::Base do
 
         it 'works with explicit method version invocation' do
           ExampleClass.class_eval do
-            decorate :one_param_method do |boolean|
+            durably_decorate :one_param_method do |boolean|
               if boolean
                 one_param_method_old("")
               else
@@ -78,7 +78,7 @@ describe DurableDecorator::Base do
                 :mode => 'strict',
                 :sha => 'ba3114b2d46caa684b3f7ba38d6f74b2'
               }
-              decorate :no_param_method, meta do 
+              durably_decorate :no_param_method, meta do
                 no_param_method_old + " and a new string"
               end
             end
@@ -96,7 +96,7 @@ describe DurableDecorator::Base do
                   :mode => 'strict',
                   :sha => '1234wrong'
                 }
-                decorate :no_param_method, meta do 
+                durably_decorate :no_param_method, meta do
                   no_param_method_old + " and a new string"
                 end
               end
@@ -111,7 +111,7 @@ describe DurableDecorator::Base do
                 meta = {
                   :mode => 'strict'
                 }
-                decorate :no_param_method, meta do 
+                durably_decorate :no_param_method, meta do
                   no_param_method_old + " and a new string"
                 end
               end
@@ -125,7 +125,7 @@ describe DurableDecorator::Base do
       it 'throws an error' do
         lambda{
           ExampleClass.class_eval do
-            decorate(:integer_method){ }
+            durably_decorate(:integer_method){ }
           end
         }.should raise_error(DurableDecorator::UndefinedMethodError)
       end
@@ -134,19 +134,19 @@ describe DurableDecorator::Base do
     context 'for existing class methods' do
       it 'guarantees access to ::method_old' do
         ExampleClass.class_eval do
-          decorate_singleton :clazz_level do 
+          durably_decorate_singleton :clazz_level do
             clazz_level_old + " and a new string"
           end
         end
 
         ExampleClass.clazz_level.should == 'original and a new string'
-      end 
+      end
 
       context 'with incorrect arity' do
         it 'throws an error' do
           lambda{
             ExampleClass.class_eval do
-              decorate_singleton(:clazz_level){|a,b| }
+              durably_decorate_singleton(:clazz_level){|a,b| }
             end
           }.should raise_error(DurableDecorator::BadArityError)
         end
@@ -155,7 +155,7 @@ describe DurableDecorator::Base do
       context 'for methods with parameters' do
         it 'guarantees access to ::method_old' do
           ExampleClass.class_eval do
-            decorate_singleton :clazz_level_paramed do |another_string|
+            durably_decorate_singleton :clazz_level_paramed do |another_string|
               "#{clazz_level_paramed_old('check')} and #{another_string}"
             end
           end
@@ -169,7 +169,7 @@ describe DurableDecorator::Base do
       it 'throws an error' do
         lambda{
           ExampleClass.class_eval do
-            decorate_singleton(:integer_method){ }
+            durably_decorate_singleton(:integer_method){ }
           end
         }.should raise_error(DurableDecorator::UndefinedMethodError)
       end
@@ -177,11 +177,11 @@ describe DurableDecorator::Base do
   end
 
   context 'with modules' do
-  # Spec uses ./sample_module.rb 
+  # Spec uses ./sample_module.rb
     context 'for existing methods' do
       it 'guarantees access to #method_old' do
         Sample.class_eval do
-          decorate :module_method do 
+          durably_decorate :module_method do
             module_method_old + " and a new string"
           end
         end
@@ -189,13 +189,13 @@ describe DurableDecorator::Base do
         o = Object.new
         o.extend(Sample)
         o.module_method.should == 'original and a new string'
-      end 
+      end
 
       context 'with incorrect arity' do
         it 'throws an error' do
           lambda{
             Sample.class_eval do
-              decorate(:module_method){|a,b| }
+              durably_decorate(:module_method){|a,b| }
             end
           }.should raise_error(DurableDecorator::BadArityError)
         end
@@ -206,7 +206,7 @@ describe DurableDecorator::Base do
       it 'throws an error' do
         lambda{
           Sample.class_eval do
-            decorate(:integer_method){ }
+            durably_decorate(:integer_method){ }
           end
         }.should raise_error(DurableDecorator::UndefinedMethodError)
       end
