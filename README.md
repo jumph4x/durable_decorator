@@ -33,7 +33,7 @@ class ExampleClass
 end
 
 class ExampleClass
-  decorate :string_method do
+  durably_decorate :string_method do
     string_method_old + " and new"
   end
 end
@@ -67,7 +67,7 @@ ExampleClass.class_eval do
     sha: 'WE-IGNORE-THE-ABOVE'
   }
 
-  decorate :string_method, meta do
+  durably_decorate :string_method, meta do
     string_method_old + " and new"
   end
 end
