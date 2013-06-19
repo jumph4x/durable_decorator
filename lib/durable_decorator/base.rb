@@ -6,6 +6,10 @@ module DurableDecorator
       DECORATION_MODES = ['strict']
       REDEFINITIONS = {}
 
+      def reset!
+        REDEFINITIONS.clear
+      end
+
       def redefine clazz, method_name, meta, &block
         if method_name.to_s.match /^self\./
           redefine_instance (class << clazz; self; end), method_name.to_s.gsub("self.",''), meta, &block
