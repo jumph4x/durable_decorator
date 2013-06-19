@@ -34,7 +34,7 @@ end
 
 class ExampleClass
   durably_decorate :string_method do
-    string_method_old + " and new"
+    string_method_original + " and new"
   end
 end
 
@@ -68,14 +68,14 @@ ExampleClass.class_eval do
   }
 
   durably_decorate :string_method, meta do
-    string_method_old + " and new"
+    string_method_original + " and new"
   end
 end
 
 DurableDecorator::TamperedDefinitionError: Method SHA mismatch, the definition has been tampered with
 ```
 
-DurableDecorator also maintains explicit versions of each method overriden by creating aliases with appended SHAs of the form ```some_method_1234abcd``` so you can always target explicit method versions without relying on ```some_method_old```.
+DurableDecorator also maintains explicit versions of each method overriden by creating aliases with appended SHAs of the form ```some_method_1234abcd``` so you can always target explicit method versions without relying on ```some_method_original```.
 
 ### No more suprise monkey patching
 Once you decorate the method and seal it with its SHA, if some gem tries to come in and overwrite your work **BEFORE** decorate-time, DurableDecorator will warn you. Similarly, expect to see an exception bubble up if the definition of the original method has changed and requires a review and a re-hash. 

@@ -5,10 +5,10 @@ describe DurableDecorator::Base do
   context 'with classes' do
   # Spec uses ./example_class.rb
     context 'for existing instance methods' do
-      it 'guarantees access to #method_old' do
+      it 'guarantees access to #method_original' do
         ExampleClass.class_eval do
           durably_decorate :no_param_method do
-            no_param_method_old + " and a new string"
+            no_param_method_original + " and a new string"
           end
         end
 
@@ -27,10 +27,10 @@ describe DurableDecorator::Base do
       end
 
       context 'for methods with parameters' do
-        it 'guarantees access to #method_old' do
+        it 'guarantees access to #method_original' do
           ExampleClass.class_eval do
             durably_decorate :one_param_method do |another_string|
-              "#{one_param_method_old('check')} and #{another_string}"
+              "#{one_param_method_original('check')} and #{another_string}"
             end
           end
 
@@ -56,7 +56,7 @@ describe DurableDecorator::Base do
           ExampleClass.class_eval do
             durably_decorate :one_param_method do |boolean|
               if boolean
-                one_param_method_old("")
+                one_param_method_original("check and ")
               else
                 "latest"
               end
@@ -72,14 +72,14 @@ describe DurableDecorator::Base do
 
       context 'for strict definitions' do
         context 'with the correct SHA' do
-          it 'guarantees access to #method_old' do
+          it 'guarantees access to #method_original' do
             ExampleClass.class_eval do
               meta = {
                 :mode => 'strict',
                 :sha => 'ba3114b2d46caa684b3f7ba38d6f74b2'
               }
               durably_decorate :no_param_method, meta do
-                no_param_method_old + " and a new string"
+                no_param_method_original + " and a new string"
               end
             end
 
@@ -97,7 +97,7 @@ describe DurableDecorator::Base do
                   :sha => '1234wrong'
                 }
                 durably_decorate :no_param_method, meta do
-                  no_param_method_old + " and a new string"
+                  no_param_method_original + " and a new string"
                 end
               end
             }.should raise_error(DurableDecorator::TamperedDefinitionError)
@@ -112,7 +112,7 @@ describe DurableDecorator::Base do
                   :mode => 'strict'
                 }
                 durably_decorate :no_param_method, meta do
-                  no_param_method_old + " and a new string"
+                  no_param_method_original + " and a new string"
                 end
               end
             }.should raise_error(DurableDecorator::InvalidDecorationError)
@@ -132,10 +132,10 @@ describe DurableDecorator::Base do
     end
 
     context 'for existing class methods' do
-      it 'guarantees access to ::method_old' do
+      it 'guarantees access to ::method_original' do
         ExampleClass.class_eval do
           durably_decorate_singleton :clazz_level do
-            clazz_level_old + " and a new string"
+            clazz_level_original + " and a new string"
           end
         end
 
@@ -153,10 +153,10 @@ describe DurableDecorator::Base do
       end
 
       context 'for methods with parameters' do
-        it 'guarantees access to ::method_old' do
+        it 'guarantees access to ::method_original' do
           ExampleClass.class_eval do
             durably_decorate_singleton :clazz_level_paramed do |another_string|
-              "#{clazz_level_paramed_old('check')} and #{another_string}"
+              "#{clazz_level_paramed_original('check')} and #{another_string}"
             end
           end
 
@@ -179,10 +179,10 @@ describe DurableDecorator::Base do
   context 'with modules' do
   # Spec uses ./sample_module.rb
     context 'for existing methods' do
-      it 'guarantees access to #method_old' do
+      it 'guarantees access to #method_original' do
         Sample.class_eval do
           durably_decorate :module_method do
-            module_method_old + " and a new string"
+            module_method_original + " and a new string"
           end
         end
 

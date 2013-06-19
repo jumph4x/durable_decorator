@@ -21,6 +21,7 @@ module DurableDecorator
       def redefine_instance clazz, method_name, meta, &block
         return unless old_method = existing_method(clazz, method_name, meta, &block)
 
+        alias_original clazz, method_name
         alias_definitions clazz, method_name, method_sha(old_method)
         redefine_method clazz, method_name, &block
 
@@ -76,7 +77,16 @@ module DurableDecorator
       def alias_definitions clazz, method_name, old_sha
         clazz.class_eval do
           alias_method("#{method_name}_#{old_sha}", method_name)
-          alias_method("#{method_name}_old", method_name)
+          alias_method("#{method_name}_#{old_sha[0..3]}", method_name)
+          alias_method("#{method_name}_#{old_sha[0..5]}", method_name)
+        end
+      end
+
+      def alias_original clazz, method_name
+        return unless original_redefinition? clazz, method_name
+
+        clazz.class_eval do
+          alias_method("#{method_name}_original", method_name)
         end
       end
 
@@ -86,15 +96,22 @@ module DurableDecorator
         name.to_sym
       end
 
+      def full_method_name clazz, method_name
+        "#{class_name(clazz)}##{method_name}"
+      end
+
+      def original_redefinition? clazz, method_name
+        !REDEFINITIONS[full_method_name(clazz, method_name)]
+      end
+
       def store_redefinition clazz, name, old_method, new_method
-        class_index = REDEFINITIONS[class_name(clazz)] ||= {}
-        method_index = class_index[name.to_sym] ||= []
+        methods = REDEFINITIONS[full_method_name(clazz, name)] ||= []
        
         to_store = [new_method]
-        to_store.unshift(old_method) if method_index.empty?
+        to_store.unshift(old_method) if original_redefinition?(clazz, name)
         
         to_store.each do |method|
-          method_index << method_hash(name, method)
+          methods << method_hash(name, method)
         end
 
         true
