@@ -49,7 +49,6 @@ describe DurableDecorator::Base do
         end
 
         it 'works with explicit method version invocation' do
-          puts DurableDecorator::Base.determine_sha("ExampleClass#one_param_method")
           ExampleClass.class_eval do
             durably_decorate :one_param_method do |boolean|
               if boolean
