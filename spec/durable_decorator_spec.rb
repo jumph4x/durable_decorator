@@ -68,6 +68,12 @@ describe DurableDecorator::Base do
           instance.one_param_method(false).should == 'latest'
           @original_sha.should_not == @redef_sha
         end
+
+        it 'work with short explicit method version invocation' do
+          instance = ExampleClass.new
+          instance.one_param_method_9358('').should == "original: "
+          instance.one_param_method_935888('').should == "original: "
+        end
       end
 
       context 'for strict definitions' do
