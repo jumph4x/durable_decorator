@@ -69,6 +69,10 @@ module DurableDecorator
         end
       end
 
+      def redefinitions
+        REDEFINITIONS
+      end
+
       def alias_definitions clazz, method_name, old_sha
         clazz.class_eval do
           alias_method("#{method_name}_#{old_sha}", method_name)
@@ -78,7 +82,7 @@ module DurableDecorator
 
       def class_name clazz
         name = clazz.name || ''
-        name = "Meta#{clazz.superclass.to_s}" if name.empty?
+        name = clazz.to_s if name.empty?
         name.to_sym
       end
 
