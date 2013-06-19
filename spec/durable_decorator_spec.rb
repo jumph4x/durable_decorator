@@ -54,7 +54,7 @@ describe DurableDecorator::Base do
               if boolean
                 one_param_method_original("older")
               else
-                one_param_method_3c39("newer")
+                one_param_method_4785("newer")
               end
             end
           end
@@ -66,8 +66,8 @@ describe DurableDecorator::Base do
 
         it 'work with short explicit method version invocation' do
           instance = ExampleClass.new
-          instance.one_param_method_9358('').should == "original: "
-          instance.one_param_method_935888('').should == "original: "
+          instance.one_param_method_1884('').should == "original: "
+          instance.one_param_method_1884eb('').should == "original: "
         end
       end
 
