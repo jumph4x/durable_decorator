@@ -43,18 +43,24 @@ describe DurableDecorator::Base do
         before do
           ExampleClass.class_eval do
             durably_decorate :one_param_method do |another_string|
-              "#{one_param_method_1884eb7af7abbccec3fd4048f99363a3('check')} and #{another_string}"
+              "#{one_param_method_935888f04d9e132be458591d5755cb8131fec457('check')} and #{another_string}"
             end
           end
         end
 
         it 'works with explicit method version invocation' do
+          puts DurableDecorator::Base.determine_sha("ExampleClass#one_param_method")
           ExampleClass.class_eval do
             durably_decorate :one_param_method do |boolean|
               if boolean
                 one_param_method_original("older")
               else
-                one_param_method_4785("newer")
+                # ugly hack due to inconsistent method_source behavior on 1.8.7
+                if RUBY_VERSION == '1.8.7'
+                  one_param_method_0ec3("newer")
+                else
+                  one_param_method_3c39("newer")
+                end
               end
             end
           end
@@ -66,8 +72,8 @@ describe DurableDecorator::Base do
 
         it 'work with short explicit method version invocation' do
           instance = ExampleClass.new
-          instance.one_param_method_1884('').should == "original: "
-          instance.one_param_method_1884eb('').should == "original: "
+          instance.one_param_method_9358('').should == "original: "
+          instance.one_param_method_935888('').should == "original: "
         end
       end
 
@@ -77,7 +83,7 @@ describe DurableDecorator::Base do
             ExampleClass.class_eval do
               meta = {
                 :mode => 'strict',
-                :sha => 'ba3114b2d46caa684b3f7ba38d6f74b2'
+                :sha => 'd54f9c7ea2038fac0ae2ff9af49c56f35761725d'
               }
               durably_decorate :no_param_method, meta do
                 no_param_method_original + " and a new string"
@@ -227,14 +233,14 @@ describe DurableDecorator::Base do
       context 'when the target is an instance method' do
         it 'should return the sha' do
           DurableDecorator::Base.determine_sha('ExampleClass#no_param_method').should ==
-            'ba3114b2d46caa684b3f7ba38d6f74b2'
+            'd54f9c7ea2038fac0ae2ff9af49c56f35761725d'
         end
       end
 
       context 'when the target is a class method' do
         it 'should return the sha' do
           DurableDecorator::Base.determine_sha('ExampleClass.clazz_level').should ==
-            'c5a3870a3934ce8d2145b841e42a8ad4'
+            'f6490bec1af021697ed8e5990f0d1db3976f065f'
         end
       end
     end
