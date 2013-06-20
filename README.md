@@ -77,6 +77,29 @@ DurableDecorator::TamperedDefinitionError: Method SHA mismatch, the definition h
 
 DurableDecorator also maintains explicit versions of each method overriden by creating aliases with appended SHAs of the form ```some_method_1234abcd``` so you can always target explicit method versions without relying on ```some_method_original```.
 
+DurableDecorator maintains 3 versions of aliases to previous method versions, 2 of which are short-SHA versions, akin to Github:
+```ruby
+DurableDecorator::Base.determine_sha('ExampleClass#no_param_method')
+# => 'ba3114b2d46caa684b3f7ba38d6f74b2'
+
+ExampleClass.class_eval do
+  durably_decorate :string_method do
+    "new"
+  end
+end
+
+# 3 explicit aliases preserve access to the original method based on it's original SHA:
+# 4-char SHA, 6-char SHA and the full SHA suffix
+
+instance = ExampleClass.new
+instance.string_method_ba31
+# => "original"
+instance.string_method_ba3114
+# => "original"
+instance.string_method_ba3114b2d46caa684b3f7ba38d6f74b2
+# => "original"
+```
+
 ### No more suprise monkey patching
 Once you decorate the method and seal it with its SHA, if some gem tries to come in and overwrite your work **BEFORE** decorate-time, DurableDecorator will warn you. Similarly, expect to see an exception bubble up if the definition of the original method has changed and requires a review and a re-hash. 
 
