@@ -22,7 +22,7 @@ module DurableDecorator
         return unless old_method = existing_method(clazz, method_name, meta, &block)
 
         alias_original clazz, method_name
-        alias_definitions clazz, method_name, method_sha(old_method)
+        alias_definitions clazz, method_name, Util.method_sha(old_method)
         redefine_method clazz, method_name, &block
 
         store_redefinition clazz, method_name, old_method, block
@@ -42,14 +42,10 @@ module DurableDecorator
       def validate_decoration_meta clazz, method_name, old_method, meta
         return unless meta
 
-        chill_meta = {}
-        meta.each do |k,v|
-          chill_meta[k.to_sym] = v
-        end
+        chill_meta = Util.symbolized_hash(meta)
 
         raise InvalidDecorationError, "The hash provided to the decorator is invalid" unless DECORATION_MODES.include? chill_meta[:mode] and chill_meta[:sha] and !chill_meta[:sha].empty?
-        
-        raise TamperedDefinitionError, "Method SHA mismatch, the definition has been tampered with" unless method_sha(old_method) == chill_meta[:sha]
+        raise TamperedDefinitionError, "Method SHA mismatch, the definition has been tampered with" unless Util.method_sha(old_method) == chill_meta[:sha]
       end
 
       def validate_method_arity clazz, method_name, old_method, &block
@@ -90,61 +86,33 @@ module DurableDecorator
         end
       end
 
-      def class_name clazz
-        name = clazz.name || ''
-        name = clazz.to_s if name.empty?
-        name.to_sym
-      end
-
-      def full_method_name clazz, method_name
-        "#{class_name(clazz)}##{method_name}"
-      end
 
       def original_redefinition? clazz, method_name
-        !REDEFINITIONS[full_method_name(clazz, method_name)]
+        !REDEFINITIONS[Util.full_method_name(clazz, method_name)]
       end
 
       def store_redefinition clazz, name, old_method, new_method
-        methods = REDEFINITIONS[full_method_name(clazz, name)] ||= []
+        methods = REDEFINITIONS[Util.full_method_name(clazz, name)] ||= []
        
         to_store = [new_method]
         to_store.unshift(old_method) if original_redefinition?(clazz, name)
         
         to_store.each do |method|
-          methods << method_hash(name, method)
+          methods << Util.method_hash(name, method)
         end
 
         true
-      end
-
-      def method_hash name, method
-        {
-          :name => name,
-          :sha => method_sha(method) 
-        }
-      end
-
-      def method_sha method
-        Digest::SHA1.hexdigest(method.source.gsub(/\s+/, ' '))
       end
 
       def redefined? clazz, method_name, &block
         begin
           result =
             overrides = REDEFINITIONS[clazz][method_name] and
-            overrides.select{|o| o == method_hash(method_name)}.first and
+            overrides.select{|o| o == Util.method_hash(method_name)}.first and
             true
         rescue
           false
         end
-      end
-
-      def logger
-        return @logger if @logger
-
-        @logger = Logging.logger(STDOUT)
-        @logger.level = :warn
-        @logger
       end
 
       def determine_sha target
@@ -158,7 +126,7 @@ module DurableDecorator
           clazz.method(method_name)
         end
 
-        method_sha(method)
+        Util.method_sha(method)
       end
     end
   end

@@ -8,6 +8,7 @@ require 'logging'
 require "durable_decorator/version"
 require "durable_decorator/constantizer"
 require "durable_decorator/base"
+require "durable_decorator/util"
 
 # errors
 require "durable_decorator/bad_arity_error"
