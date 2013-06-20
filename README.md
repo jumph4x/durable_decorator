@@ -4,6 +4,7 @@
 
 [![Build Status](https://travis-ci.org/jumph4x/durable_decorator.png)](https://travis-ci.org/jumph4x/durable_decorator)
 [![Code Climate](https://codeclimate.com/github/jumph4x/durable_decorator.png)](https://codeclimate.com/github/jumph4x/durable_decorator)
+[![Dependency Status](https://gemnasium.com/jumph4x/durable_decorator.png)](https://gemnasium.com/jumph4x/durable_decorator)
 
 This is a project for modifying the behavior of gems outside of your reach. You may be using a large Rails Engine and be wanting to simply decorate some existing behavior, but at the same time you want to inherit original behavior. 
 
