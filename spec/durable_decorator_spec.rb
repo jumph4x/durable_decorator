@@ -49,14 +49,13 @@ describe DurableDecorator::Base do
         end
 
         it 'works with explicit method version invocation' do
-          puts DurableDecorator::Base.determine_sha("ExampleClass#one_param_method")
           ExampleClass.class_eval do
             durably_decorate :one_param_method do |boolean|
               if boolean
                 one_param_method_original("older")
               else
                 # ugly hack due to inconsistent method_source behavior on 1.8.7
-                if RUBY_VERSION == '1.8.7'
+                if /^ruby 1\.8\.7/ =~ RUBY_DESCRIPTION
                   one_param_method_0ec3("newer")
                 else
                   one_param_method_3c39("newer")
