@@ -95,7 +95,7 @@ module DurableDecorator
       end
 
       def determine_sha target
-        raise "Please provide a fully qualified method name: Module::Clazz#instance_method or ::clazz_method" unless target.match(/\.|#/)
+        raise "Please provide a fully qualified method name: Module::Clazz#instance_method or ::clazz_method" unless target && target.match(/\.|#/)
 
         class_name, separator, method_name = target.match(/(.*)(\.|#)(.*)/)[1..3]
         clazz = Constantizer.constantize(class_name)
