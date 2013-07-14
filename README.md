@@ -33,7 +33,7 @@ class ExampleClass
   end
 end
 
-class ExampleClass
+ExampleClass.class_eval do
   durably_decorate :string_method do
     string_method_original + " and new"
   end
