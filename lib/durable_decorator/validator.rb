@@ -1,7 +1,7 @@
 module DurableDecorator
   class Validator
     class << self
-      DECORATION_MODES = ['strict']
+      DECORATION_MODES = ['strict', 'soft']
 
       def validate_decoration_meta clazz, method_name, old_method, meta
         return unless meta
@@ -9,7 +9,15 @@ module DurableDecorator
         chill_meta = Util.symbolized_hash(meta)
 
         raise InvalidDecorationError, "The hash provided to the decorator is invalid" unless DECORATION_MODES.include? chill_meta[:mode] and chill_meta[:sha] and !chill_meta[:sha].empty?
-        raise TamperedDefinitionError, "Method SHA mismatch, the definition has been tampered with" unless Util.method_sha(old_method) == chill_meta[:sha]
+        send("handle_#{chill_meta[:mode]}_fault", clazz, method_name) unless Util.method_sha(old_method) == chill_meta[:sha]
+      end
+
+      def handle_strict_fault(*args)
+        raise TamperedDefinitionError, "Method SHA mismatch, the definition has been tampered with"
+      end
+
+      def handle_soft_fault(clazz, method_name)
+        Util.logger.fatal "#{clazz}##{method_name} decoration uses an invalid SHA. The original method definition could have been tampered with!"
       end
 
       def validate_method_arity clazz, method_name, old_method, &block

@@ -125,6 +125,56 @@ describe DurableDecorator::Base do
           end
         end
       end
+
+      context 'for soft definitions' do
+        context 'with the correct SHA' do
+          it 'guarantees access to #method_original' do
+            ExampleClass.class_eval do
+              meta = {
+                :mode => 'soft',
+                :sha => 'd54f9c7ea2038fac0ae2ff9af49c56f35761725d'
+              }
+              durably_decorate :no_param_method, meta do
+                no_param_method_original + " and a new string"
+              end
+            end
+
+            instance = ExampleClass.new
+            instance.no_param_method.should == "original and a new string"
+          end
+        end
+
+        context 'with the wrong SHA' do
+          it 'raises an error' do
+            DurableDecorator::Util.stub!(:logger).and_return(Logging.logger['SuperLogger'])
+            ExampleClass.class_eval do
+              meta = {
+                :mode => 'soft',
+                :sha => '1234wrong'
+              }
+              durably_decorate :no_param_method, meta do
+                no_param_method_original + " and a new string"
+              end
+            end
+            @log_output.readline.should match(/invalid SHA/)
+          end
+        end
+
+        context 'for an invalid config' do
+          it 'raises an error' do
+            lambda{
+              ExampleClass.class_eval do
+                meta = {
+                  :mode => 'soft'
+                }
+                durably_decorate :no_param_method, meta do
+                  no_param_method_original + " and a new string"
+                end
+              end
+            }.should raise_error(DurableDecorator::InvalidDecorationError)
+          end
+        end
+      end
     end
 
     context 'for methods not yet defined' do

@@ -35,8 +35,27 @@ module DurableDecorator
       def logger
         return @logger if @logger
 
-        @logger = Logging.logger(STDOUT)
+        Logging.color_scheme( 'bright',
+          :levels => {
+            :info  => :green,
+            :warn  => :yellow,
+            :error => :red,
+            :fatal => [:white, :on_red]
+          }
+        )
+
+        Logging.appenders.stdout(
+          'stdout',
+          :layout => Logging.layouts.pattern(
+            :pattern => '%-5l %c: %m\n',
+            :color_scheme => 'bright'
+          )
+        )
+
+        @logger = Logging.logger['DurableDecorator']
         @logger.level = :warn
+
+        Logging.logger.root.appenders = Logging.appenders.stdout
         @logger
       end
     end
