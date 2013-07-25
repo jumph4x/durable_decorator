@@ -62,18 +62,34 @@ Armed with this knowledge, we can enforce a strict mode:
 ```ruby
 DurableDecorator::Base.determine_sha('ExampleClass#no_param_method')
 # => 'ba3114b2d46caa684b3f7ba38d6f74b2'
-ExampleClass.class_eval do
-  meta = {
-    mode: 'strict',
-    sha: 'WE-IGNORE-THE-ABOVE'
-  }
 
-  durably_decorate :string_method, meta do
+ExampleClass.class_eval do
+  durably_decorate :string_method, mode: 'strict', sha: 'ba3114b2d46caa684b3f7ba38d6f74b2' do
     string_method_original + " and new"
   end
 end
 
 DurableDecorator::TamperedDefinitionError: Method SHA mismatch, the definition has been tampered with
+```
+
+DurableDecorator may also decorate methods with params like so:
+
+```ruby
+class ExampleClass
+  def string_method(text)
+    "original #{text}"
+  end
+end
+
+ExampleClass.class_eval do
+  durably_decorate :string_method, mode: 'strict', sha: 'ba3114b2d46caa684b3f7ba38d6f74b2' do |text|
+    string_method_original(text) + " and new"
+  end
+end
+
+instance = ExampleClass.new
+instance.string_method('test')
+# => "original test and new"
 ```
 
 DurableDecorator also maintains explicit versions of each method overriden by creating aliases with appended SHAs of the form ```some_method_1234abcd``` so you can always target explicit method versions without relying on ```some_method_original```.
