@@ -7,17 +7,22 @@ module DurableDecorator
         return unless meta
 
         chill_meta = Util.symbolized_hash(meta)
+        provided_mode = chill_meta[:mode]
+        provided_sha = chill_meta[:sha]
+        expected_sha = Util.method_sha(old_method)
 
-        raise InvalidDecorationError, "The hash provided to the decorator is invalid" unless DECORATION_MODES.include? chill_meta[:mode] and chill_meta[:sha] and !chill_meta[:sha].empty?
-        send("handle_#{chill_meta[:mode]}_fault", clazz, method_name) unless Util.method_sha(old_method) == chill_meta[:sha]
+        raise InvalidDecorationError, "The :mode provided is invalid. Possible modes are: #{DECORATION_MODES.join(", ")}" unless DECORATION_MODES.include? provided_mode
+        raise InvalidDecorationError, "The SHA provided appears to be empty" unless provided_sha and !provided_sha.empty?
+        send("handle_#{chill_meta[:mode]}_fault", clazz, method_name, expected_sha, provided_sha) unless expected_sha == provided_sha
       end
 
-      def handle_strict_fault(*args)
-        raise TamperedDefinitionError, "Method SHA mismatch, the definition has been tampered with"
+      def handle_strict_fault(clazz, method_name, expected_sha, provided_sha)
+        raise TamperedDefinitionError, "Method SHA mismatch, the definition has been tampered with. #{expected_sha} is expected but #{provided_sha} was provided."
       end
 
-      def handle_soft_fault(clazz, method_name)
+      def handle_soft_fault(clazz, method_name, expected_sha, provided_sha)
         Util.logger.fatal "#{clazz}##{method_name} decoration uses an invalid SHA. The original method definition could have been tampered with!"
+        Util.logger.fatal "Expected SHA was #{expected_sha} but the provided SHA is #{provided_sha}"
       end
 
       def validate_method_arity clazz, method_name, old_method, &block
