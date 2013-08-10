@@ -64,7 +64,7 @@ DurableDecorator::Base.determine_sha('ExampleClass#no_param_method')
 # => 'ba3114b2d46caa684b3f7ba38d6f74b2'
 
 ExampleClass.class_eval do
-  durably_decorate :string_method, mode: 'strict', sha: 'ba3114b2d46caa684b3f7ba38d6f74b2' do
+  durably_decorate :string_method, mode: 'strict', sha: 'WRONG-SHA-123456' do
     string_method_original + " and new"
   end
 end
