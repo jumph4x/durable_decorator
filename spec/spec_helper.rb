@@ -11,5 +11,6 @@ RSpec.configure do |config|
     load 'sample_module.rb'
 
     DurableDecorator::Base.reset!
+    DurableDecorator::Util.stub(:logger).and_return(Logging.logger['SuperLogger'])
   end
 end

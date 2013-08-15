@@ -146,19 +146,27 @@ describe DurableDecorator::Base do
 
         context 'with the wrong SHA' do
           it 'logs a warning but does not raise an error' do
-            DurableDecorator::Util.stub(:logger).and_return(Logging.logger['SuperLogger'])
-            lambda{
-              ExampleClass.class_eval do
-                meta = {
-                  :mode => 'soft',
-                  :sha => '1234wrong'
-                }
-                durably_decorate :no_param_method, meta do
-                  no_param_method_original + " and a new string"
-                end
+            ExampleClass.class_eval do
+              meta = {
+                :mode => 'soft',
+                :sha => '1234wrong'
+              }
+              durably_decorate :no_param_method, meta do
+                no_param_method_original + " and a new string"
               end
-              @log_output.readline.should match(/invalid SHA/)
-            }.should_not raise_error
+            end
+            @log_output.readline.should match(/invalid SHA/)
+          end
+        end
+
+        context 'when lacking SHA' do
+          it 'prints the SHA suggestion' do
+            ExampleClass.class_eval do
+              durably_decorate :no_param_method do
+                no_param_method_original + " and a new string"
+              end
+            end
+            @log_output.readline.should match(/d54f9c7ea2038fac0ae2ff9af49c56f35761725d/)
           end
         end
 

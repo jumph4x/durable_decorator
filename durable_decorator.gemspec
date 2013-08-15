@@ -20,7 +20,6 @@ Gem::Specification.new do |spec|
 
   spec.add_dependency "method_source"
   spec.add_dependency "logging"
-  #spec.add_dependency "activesupport"
 
   spec.add_development_dependency "bundler", "~> 1.3"
   spec.add_development_dependency "rake"
