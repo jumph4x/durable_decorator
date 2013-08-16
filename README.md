@@ -133,7 +133,7 @@ def one_param_method param
 end
 ```
 
-### No more suprise monkey patching
+### No more surprise monkey patching
 Once you decorate the method and seal it with its SHA, if some gem tries to come in and overwrite your work **BEFORE** decorate-time, DurableDecorator will warn you. Similarly, expect to see an exception bubble up if the definition of the original method has changed and requires a review and a re-hash. 
 
 The usefulness is for gem consumers, and their application-level specs. 
