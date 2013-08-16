@@ -74,6 +74,10 @@ describe DurableDecorator::Base do
           instance.one_param_method_9358('').should == "original: "
           instance.one_param_method_935888('').should == "original: "
         end
+
+        it 'maintains history of decorations' do
+          DurableDecorator::Base.definitions['ExampleClass#one_param_method'].size.should == 2
+        end
       end
 
       context 'for strict definitions' do

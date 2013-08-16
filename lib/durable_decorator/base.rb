@@ -3,10 +3,10 @@ require 'digest/sha1'
 module DurableDecorator
   class Base
     class << self
-      REDEFINITIONS = {}
+      DEFINITIONS = {}
 
       def reset!
-        REDEFINITIONS.clear
+        DEFINITIONS.clear
       end
 
       def redefine clazz, method_name, meta, &block
@@ -45,8 +45,8 @@ module DurableDecorator
         end
       end
 
-      def redefinitions
-        REDEFINITIONS
+      def definitions
+        DEFINITIONS
       end
 
       def alias_definitions clazz, method_name, old_sha
@@ -67,11 +67,12 @@ module DurableDecorator
 
 
       def original_redefinition? clazz, method_name
-        !REDEFINITIONS[Util.full_method_name(clazz, method_name)]
+        defs = DEFINITIONS[Util.full_method_name(clazz, method_name)]
+        !defs || defs.empty?
       end
 
       def store_redefinition clazz, name, old_method, new_method
-        methods = REDEFINITIONS[Util.full_method_name(clazz, name)] ||= []
+        methods = (DEFINITIONS[Util.full_method_name(clazz, name)] ||= [])
        
         to_store = [new_method]
         to_store.unshift(old_method) if original_redefinition?(clazz, name)
@@ -86,7 +87,7 @@ module DurableDecorator
       def redefined? clazz, method_name, &block
         begin
           result =
-            overrides = REDEFINITIONS[clazz][method_name] and
+            overrides = DEFINITIONS[clazz][method_name] and
             overrides.select{|o| o == Util.method_hash(method_name)}.first and
             true
         rescue
@@ -95,7 +96,7 @@ module DurableDecorator
       end
 
       def determine_sha target
-        raise "Please provide a fully qualified method name: Module::Clazz#instance_method or ::clazz_method" unless target && target.match(/\.|#/)
+        raise "Please provide a fully qualified method name: Module::Clazz#instance_method or .clazz_method" unless target && target.match(/\.|#/)
 
         class_name, separator, method_name = target.match(/(.*)(\.|#)(.*)/)[1..3]
         clazz = Constantizer.constantize(class_name)

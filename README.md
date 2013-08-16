@@ -117,6 +117,22 @@ instance.string_method_ba3114b2d46caa684b3f7ba38d6f74b2
 # => "original"
 ```
 
+### Asking for history
+
+You can inquire about the history of method [re]definitions like this:
+```ruby
+DurableDecorator::Base.definitions('ExampleClass#one_param_method')
+# => [{:name=>:one_param_method, :sha=>"935888f04d9e132be458591d5755cb8131fec457", :body=>"def one_param_method param\n  \"original: \#{param}\"\nend\n", :source=>["/home/denis/rails/durable_decorator/spec/example_class.rb", 6]}, {:name=>:one_param_method, :sha=>"3c39948e5e83c04fd4bf7a6ffab12c6828e0d959", :body=>"durably_decorate :one_param_method do |another_string|\n  \"\#{one_param_method_935888f04d9e132be458591d5755cb8131fec457('check')} and \#{another_string}\"\nend\n", :source=>["/home/denis/rails/durable_decorator/spec/durable_decorator_spec.rb", 45]}] 
+```
+
+With any luck you can even get the specific [re]definition printed!
+```ruby
+puts DurableDecorator::Base.definitions('ExampleClass#one_param_method')[0][:body]
+def one_param_method param
+  "original: #{param}"
+end
+```
+
 ### No more suprise monkey patching
 Once you decorate the method and seal it with its SHA, if some gem tries to come in and overwrite your work **BEFORE** decorate-time, DurableDecorator will warn you. Similarly, expect to see an exception bubble up if the definition of the original method has changed and requires a review and a re-hash. 
 

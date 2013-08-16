@@ -24,8 +24,16 @@ module DurableDecorator
       def method_hash name, method
         {
           :name => name,
-          :sha => method_sha(method) 
+          :sha => method_sha(method),
+          :body => outdented_method_body(method),
+          :source => method.source_location
         }
+      end
+
+      def outdented_method_body method
+        body = method.source
+        indent = body.match(/^\W+/).to_s
+        body.lines.map{|l| l.sub(indent, '')}.join
       end
 
       def method_sha method
