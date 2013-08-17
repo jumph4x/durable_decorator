@@ -96,6 +96,14 @@ module DurableDecorator
       end
 
       def determine_sha target
+        Util.method_sha extract_method(target)
+      end
+
+      def determine_arity target
+        extract_method(target).arity
+      end
+
+      def extract_method target
         raise "Please provide a fully qualified method name: Module::Clazz#instance_method or .clazz_method" unless target && target.match(/\.|#/)
 
         class_name, separator, method_name = target.match(/(.*)(\.|#)(.*)/)[1..3]
@@ -105,8 +113,6 @@ module DurableDecorator
         else
           clazz.method(method_name)
         end
-
-        Util.method_sha(method)
       end
     end
   end
