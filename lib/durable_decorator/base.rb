@@ -51,9 +51,9 @@ module DurableDecorator
 
       def alias_definitions clazz, method_name, old_sha
         clazz.class_eval do
-          alias_method("#{method_name}_#{old_sha}", method_name)
-          alias_method("#{method_name}_#{old_sha[0..3]}", method_name)
-          alias_method("#{method_name}_#{old_sha[0..5]}", method_name)
+          alias_method("_#{old_sha}_#{method_name}", method_name)
+          alias_method("_#{old_sha[0..3]}_#{method_name}", method_name)
+          alias_method("_#{old_sha[0..5]}_#{method_name}", method_name)
         end
       end
 
@@ -61,7 +61,7 @@ module DurableDecorator
         return unless original_redefinition? clazz, method_name
 
         clazz.class_eval do
-          alias_method("#{method_name}_original", method_name)
+          alias_method("original_#{method_name}", method_name)
         end
       end
 

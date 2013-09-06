@@ -5,10 +5,10 @@ describe DurableDecorator::Base do
   context 'with classes' do
   # Spec uses ./example_class.rb
     context 'for existing instance methods' do
-      it 'guarantees access to #method_original' do
+      it 'guarantees access to #original_method' do
         ExampleClass.class_eval do
           durably_decorate :no_param_method do
-            no_param_method_original + " and a new string"
+            original_no_param_method + " and a new string"
           end
         end
 
@@ -27,10 +27,10 @@ describe DurableDecorator::Base do
       end
 
       context 'for methods with parameters' do
-        it 'guarantees access to #method_original' do
+        it 'guarantees access to #original_method' do
           ExampleClass.class_eval do
             durably_decorate :one_param_method do |another_string|
-              "#{one_param_method_original('check')} and #{another_string}"
+              "#{original_one_param_method('check')} and #{another_string}"
             end
           end
 
@@ -43,7 +43,7 @@ describe DurableDecorator::Base do
         before do
           ExampleClass.class_eval do
             durably_decorate :one_param_method do |another_string|
-              "#{one_param_method_935888f04d9e132be458591d5755cb8131fec457('check')} and #{another_string}"
+              "#{_935888f04d9e132be458591d5755cb8131fec457_one_param_method('check')} and #{another_string}"
             end
           end
         end
@@ -52,9 +52,9 @@ describe DurableDecorator::Base do
           ExampleClass.class_eval do
             durably_decorate :one_param_method do |boolean|
               if boolean
-                one_param_method_original("older")
+                original_one_param_method("older")
               else
-                one_param_method_3c39("newer")
+                _b844_one_param_method("newer")
               end
             end
           end
@@ -66,8 +66,8 @@ describe DurableDecorator::Base do
 
         it 'work with short explicit method version invocation' do
           instance = ExampleClass.new
-          instance.one_param_method_9358('').should == "original: "
-          instance.one_param_method_935888('').should == "original: "
+          instance._9358_one_param_method('').should == "original: "
+          instance._935888_one_param_method('').should == "original: "
         end
 
         it 'maintains history of decorations' do
@@ -84,7 +84,7 @@ describe DurableDecorator::Base do
                 :sha => 'd54f9c7ea2038fac0ae2ff9af49c56f35761725d'
               }
               durably_decorate :no_param_method, meta do
-                no_param_method_original + " and a new string"
+                original_no_param_method + " and a new string"
               end
             end
 
@@ -102,7 +102,7 @@ describe DurableDecorator::Base do
                   :sha => '1234wrong'
                 }
                 durably_decorate :no_param_method, meta do
-                  no_param_method_original + " and a new string"
+                  original_no_param_method + " and a new string"
                 end
               end
             }.should raise_error(DurableDecorator::TamperedDefinitionError)
@@ -117,7 +117,7 @@ describe DurableDecorator::Base do
                   :mode => 'strict'
                 }
                 durably_decorate :no_param_method, meta do
-                  no_param_method_original + " and a new string"
+                  original_no_param_method + " and a new string"
                 end
               end
             }.should raise_error(DurableDecorator::InvalidDecorationError)
@@ -134,7 +134,7 @@ describe DurableDecorator::Base do
                 :sha => 'd54f9c7ea2038fac0ae2ff9af49c56f35761725d'
               }
               durably_decorate :no_param_method, meta do
-                no_param_method_original + " and a new string"
+                original_no_param_method + " and a new string"
               end
             end
 
@@ -151,7 +151,7 @@ describe DurableDecorator::Base do
                 :sha => '1234wrong'
               }
               durably_decorate :no_param_method, meta do
-                no_param_method_original + " and a new string"
+                original_no_param_method + " and a new string"
               end
             end
             @log_output.readline.should match(/invalid SHA/)
@@ -177,7 +177,7 @@ describe DurableDecorator::Base do
                   :mode => 'strict'
                 }
                 durably_decorate :no_param_method, meta do
-                  no_param_method_original + " and a new string"
+                  original_no_param_method + " and a new string"
                 end
               end
             }.should raise_error(DurableDecorator::InvalidDecorationError)
@@ -200,7 +200,7 @@ describe DurableDecorator::Base do
       it 'guarantees access to ::method_original' do
         ExampleClass.class_eval do
           durably_decorate_singleton :clazz_level do
-            clazz_level_original + " and a new string"
+            original_clazz_level + " and a new string"
           end
         end
 
@@ -221,7 +221,7 @@ describe DurableDecorator::Base do
         it 'guarantees access to ::method_original' do
           ExampleClass.class_eval do
             durably_decorate_singleton :clazz_level_paramed do |another_string|
-              "#{clazz_level_paramed_original('check')} and #{another_string}"
+              "#{original_clazz_level_paramed('check')} and #{another_string}"
             end
           end
 
@@ -247,7 +247,7 @@ describe DurableDecorator::Base do
       it 'guarantees access to #method_original' do
         Sample.class_eval do
           durably_decorate :module_method do
-            module_method_original + " and a new string"
+            original_module_method + " and a new string"
           end
         end
 
