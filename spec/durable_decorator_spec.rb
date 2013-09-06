@@ -127,7 +127,7 @@ describe DurableDecorator::Base do
 
       context 'for soft definitions' do
         context 'with the correct SHA' do
-          it 'guarantees access to #method_original' do
+          it 'guarantees access to #original_method' do
             ExampleClass.class_eval do
               meta = {
                 :mode => 'soft',
@@ -197,7 +197,7 @@ describe DurableDecorator::Base do
     end
 
     context 'for existing class methods' do
-      it 'guarantees access to ::method_original' do
+      it 'guarantees access to ::original_method' do
         ExampleClass.class_eval do
           durably_decorate_singleton :clazz_level do
             original_clazz_level + " and a new string"
@@ -218,7 +218,7 @@ describe DurableDecorator::Base do
       end
 
       context 'for methods with parameters' do
-        it 'guarantees access to ::method_original' do
+        it 'guarantees access to ::original_method' do
           ExampleClass.class_eval do
             durably_decorate_singleton :clazz_level_paramed do |another_string|
               "#{original_clazz_level_paramed('check')} and #{another_string}"
@@ -244,7 +244,7 @@ describe DurableDecorator::Base do
   context 'with modules' do
   # Spec uses ./sample_module.rb
     context 'for existing methods' do
-      it 'guarantees access to #method_original' do
+      it 'guarantees access to #original_method' do
         Sample.class_eval do
           durably_decorate :module_method do
             original_module_method + " and a new string"
