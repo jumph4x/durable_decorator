@@ -16,7 +16,9 @@ module DurableDecorator
         provided_sha = chill_meta[:sha]
 
         raise InvalidDecorationError, "The :mode provided is invalid. Possible modes are: #{DECORATION_MODES.join(", ")}" unless DECORATION_MODES.include? provided_mode
-        raise InvalidDecorationError, "The SHA provided appears to be empty" unless provided_sha and !provided_sha.empty?
+        if provided_mode == 'strict'
+          raise InvalidDecorationError, "The SHA provided appears to be empty" unless provided_sha and !provided_sha.empty?
+        end
         send("handle_#{chill_meta[:mode]}_fault", clazz, method_name, expected_sha, provided_sha) unless expected_sha == provided_sha
       end
 

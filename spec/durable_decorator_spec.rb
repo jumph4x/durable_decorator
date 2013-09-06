@@ -179,7 +179,7 @@ describe DurableDecorator::Base do
             lambda{
               ExampleClass.class_eval do
                 meta = {
-                  :mode => 'soft'
+                  :mode => 'strict'
                 }
                 durably_decorate :no_param_method, meta do
                   no_param_method_original + " and a new string"
