@@ -54,12 +54,7 @@ describe DurableDecorator::Base do
               if boolean
                 one_param_method_original("older")
               else
-                # ugly hack due to inconsistent method_source behavior on 1.8.7
-                if /^ruby 1\.8\.7/ =~ RUBY_DESCRIPTION
-                  one_param_method_0ec3("newer")
-                else
-                  one_param_method_3c39("newer")
-                end
+                one_param_method_3c39("newer")
               end
             end
           end
