@@ -30,6 +30,8 @@ Prior to Version 0.2.0 original methods would have a suffix of original or SHA. 
 use prefix rather than suffix in order to be compatible with example! and example? methods.  Please review your durably decorated
 methods when upgrading to Version 0.2.0.
 
+Versions >= 0.2.0 are not tested on Rubies < 1.9.2. Please use version 0.1.2 if you absolutely need Ruby 1.8.7 compatibility.
+
 ## Usage
 
 ```ruby
