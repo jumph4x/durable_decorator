@@ -29,7 +29,7 @@ module DurableDecorator
 
       # Ensure method exists before creating new definitions
       def existing_method clazz, method_name, meta, &block
-        return if redefined? clazz, method_name, &block
+        return if redefined?(clazz, method_name, &block)
 
         old_method = Validator.validate_existing_definition clazz, method_name
         Validator.validate_method_arity clazz, method_name, old_method, &block
@@ -85,14 +85,9 @@ module DurableDecorator
       end
 
       def redefined? clazz, method_name, &block
-        begin
-          result =
-            overrides = DEFINITIONS[clazz][method_name] and
-            overrides.select{|o| o == Util.method_hash(method_name)}.first and
-            true
-        rescue
-          false
-        end
+        full_name = Util.full_method_name(clazz, method_name)
+        redefs = DEFINITIONS[full_name] and
+        redefs.include? Util.method_hash(method_name, block)
       end
 
       def determine_sha target

@@ -39,6 +39,19 @@ describe DurableDecorator::Base do
         end
       end
 
+      context 'for re-run decorations' do
+        it 'does not create a new redefinition' do
+          2.times {
+            ExampleClass.class_eval do
+              durably_decorate :no_param_method do
+                original_no_param_method + " and a new string"
+              end
+            end
+          }
+          DurableDecorator::Base.definitions['ExampleClass#no_param_method'].size.should == 2 # original definition and one deoration
+        end
+      end
+
       context 'for double decorations' do
         before do
           ExampleClass.class_eval do
