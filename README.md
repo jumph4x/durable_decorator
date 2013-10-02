@@ -18,7 +18,11 @@ Some additional background: http://stackoverflow.com/questions/4470108/when-monk
 
 Add this line to your application's Gemfile:
 
-    gem 'durable_decorator', :github => 'jumph4x/durable_decorator'
+    gem 'durable_decorator', github: 'jumph4x/durable_decorator'
+
+Or to include rake tasks for Rails you can use [DurableDecoratorRails](https://github.com/jumph4x/durable_decorator_rails):
+
+    gem 'durable_decorator_rails', github: 'jumph4x/durable_decorator_rails'
 
 And then execute:
 
