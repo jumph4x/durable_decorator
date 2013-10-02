@@ -31,8 +31,8 @@ module DurableDecorator
       end
 
       def handle_soft_fault clazz, method_name, expected_sha, provided_sha
-        Util.logger.fatal "#{clazz}##{method_name} decoration uses an invalid SHA. The original method definition could have been tampered with!"
-        Util.logger.fatal "Expected SHA was #{expected_sha} but the provided SHA is #{provided_sha}"
+        Util.logger.warn "#{clazz}##{method_name} decoration uses an invalid SHA. The original method definition could have been tampered with!"
+        Util.logger.warn "Expected SHA was #{expected_sha} but the provided SHA is #{provided_sha}"
       end
 
       def validate_method_arity clazz, method_name, old_method, &block
