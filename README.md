@@ -104,7 +104,7 @@ instance.string_method('test')
 # => "original test and new"
 ```
 
-DurableDecorator also maintains explicit versions of each method overriden by creating aliases with appended SHAs of the form ```some_method_1234abcd``` so you can always target explicit method versions without relying on ```original_some_method```.
+DurableDecorator also maintains explicit versions of each method overriden by creating aliases with prepended SHAs of the form ```_1234abcd_some_method``` so you can always target explicit method versions without relying on ```original_some_method```.
 
 DurableDecorator maintains 3 versions of aliases to previous method versions, 2 of which are short-SHA versions, akin to Github:
 ```ruby
