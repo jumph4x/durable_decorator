@@ -150,6 +150,60 @@ Once you decorate the method and seal it with its SHA, if some gem tries to come
 
 The usefulness is for gem consumers, and their application-level specs. 
 
+### Problems
+Currently, dealing with default parameter values is problematic due to how Ruby answer inquiries about methods' arity. If the method you are overriding has default values, consider appending a splat argument and manually parsing the contents. Here is an example:
+
+```ruby
+class ExampleClass
+  def string_method arg1, args2 = [], arg3 = {}
+    "original"
+  end
+end
+
+ExampleClass.class_eval do
+  durably_decorate :string_method do |arg1, *args|
+    arg2 = args[0] || []
+    arg3 = args[1] || {}
+
+    original_string_method + " and new"
+  end
+end
+```
+
+Additionally, if the method uses def-level exception rescuing, you will likely need to wrap it in a ```begin```-```end``, consider such a class:
+```ruby
+class ExampleClass
+  def string_method
+    ExceptionRaiser.call
+  rescue
+    'Failure'
+  end
+end
+```
+In this case, running the generation will produce incomplete syntax:
+```ruby
+ExampleClass.class_eval do
+  durably_decorate :string_method do
+    ExceptionRaiser.call
+  rescue
+    'Failure'
+  end
+end
+```
+
+Correct like so:
+```ruby
+ExampleClass.class_eval do
+  durably_decorate :string_method do
+    begin
+      ExceptionRaiser.call
+    rescue
+      'Failure'
+    end
+  end
+end
+```
+
 ## Contributing
 
 1. Fork it
